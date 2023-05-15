@@ -17,6 +17,8 @@ function Transfer({ address, setBalance, privateKey }) {
     const [signature, recoverBit] = await secp.sign(hash, privateKey, {
       recovered: true,
     });
+    const pubKey = secp.recoverPublicKey(hash, signature, recoverBit);
+    console.log(toHex(pubKey).toString().slice(0, 20));
     try {
       const {
         data: { balance },

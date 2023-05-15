@@ -20,9 +20,9 @@ app.get("/balance/:address", (req, res) => {
   res.send({ balance });
 });
 
-app.post("/send", (req, res) => {
+app.post("/send", async (req, res) => {
   const { signature, recoverBit, hash, recipient, amount } = req.body;
-  const sender = secp.recoverPublicKey(hash, signature, recoverBit);
+  const sender = getPubKey(hash, signature, recoverBit);
   const isSign = secp.verify(signature, hash, sender);
   if (isSign) {
     setInitialBalance(toHex(sender).toString().slice(0, 20));
@@ -43,7 +43,9 @@ app.post("/send", (req, res) => {
 app.listen(port, () => {
   console.log(`Listening on port ${port}!`);
 });
-
+function getPubKey(hash, signature, recoverBit) {
+  return secp.recoverPublicKey(hash, signature, recoverBit);
+}
 function setInitialBalance(address) {
   if (!balances[address]) {
     balances[address] = 0;
